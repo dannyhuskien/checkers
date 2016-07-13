@@ -1,5 +1,5 @@
 {
-  "name": "template",
+  "name": "checkers",
   "dependencies": {
     "jquery": "2",
     "bootstrap": "^3.3.6",
