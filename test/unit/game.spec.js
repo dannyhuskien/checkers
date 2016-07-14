@@ -170,5 +170,47 @@ describe('Game', () => {
       expect(testGame.pieces[0].x).to.equal(0);
       expect(testGame.pieces[0].y).to.equal(0);
     });
+    it('should become a king - p1', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 5, y: 5, king: false, owner: 'p2' });
+      const err = testGame.move({ startx: 1, starty: 6, tox: 0, toy: 7 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[0].x).to.equal(0);
+      expect(testGame.pieces[0].y).to.equal(7);
+      expect(testGame.pieces[0].king).to.be.true;
+    });
+    it('should NOT become a king - p1', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 0, y: 0, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 5, y: 5, king: false, owner: 'p2' });
+      const err = testGame.move({ startx: 0, starty: 0, tox: 1, toy: 1 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[0].x).to.equal(1);
+      expect(testGame.pieces[0].y).to.equal(1);
+      expect(testGame.pieces[0].king).to.be.false;
+    });
+    it('should become a king - p2', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 1, y: 1, king: false, owner: 'p2' });
+      testGame.turn = 'p2';
+      const err = testGame.move({ startx: 1, starty: 1, tox: 0, toy: 0 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[1].x).to.equal(0);
+      expect(testGame.pieces[1].y).to.equal(0);
+      expect(testGame.pieces[1].king).to.be.true;
+    });
+    it('should NOT become a king - p2', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 0, y: 0, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 5, y: 5, king: false, owner: 'p2' });
+      testGame.turn = 'p2';
+      const err = testGame.move({ startx: 5, starty: 5, tox: 6, toy: 4 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[1].x).to.equal(6);
+      expect(testGame.pieces[1].y).to.equal(4);
+      expect(testGame.pieces[1].king).to.be.false;
+    });
   });
 });

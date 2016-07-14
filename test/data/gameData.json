@@ -234,5 +234,71 @@
         }
     ],
     "__v" : 1
+},
+{
+    "_id" : ObjectId("5786a64b1534ee866ba41115"),
+    "player1" : ObjectId("111111111111111111111111"),
+    "player2" : ObjectId("111111111111111111111112"),
+    "turn" : "p1",
+    "pieces" : [
+        {
+            "x" : 1,
+            "y" : 6,
+            "king" : false,
+            "owner" : "p1"
+        },
+        {
+            "x" : 3,
+            "y" : 5,
+            "king" : false,
+            "owner" : "p1"
+        },
+        {
+            "x" : 1,
+            "y" : 1,
+            "king" : false,
+            "owner" : "p2"
+        },
+        {
+            "x" : 3,
+            "y" : 2,
+            "king" : false,
+            "owner" : "p2"
+        }
+    ],
+    "__v" : 1
+},
+{
+    "_id" : ObjectId("5786a64b1534ee866ba41116"),
+    "player1" : ObjectId("111111111111111111111111"),
+    "player2" : ObjectId("111111111111111111111112"),
+    "turn" : "p2",
+    "pieces" : [
+        {
+            "x" : 1,
+            "y" : 6,
+            "king" : false,
+            "owner" : "p1"
+        },
+        {
+            "x" : 3,
+            "y" : 5,
+            "king" : false,
+            "owner" : "p1"
+        },
+        {
+            "x" : 1,
+            "y" : 1,
+            "king" : false,
+            "owner" : "p2"
+        },
+        {
+            "x" : 3,
+            "y" : 2,
+            "king" : false,
+            "owner" : "p2"
+        }
+    ],
+    "__v" : 1
 }
 ]

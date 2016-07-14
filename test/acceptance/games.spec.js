@@ -177,5 +177,59 @@ describe('games', () => {
           done();
         });
     });
+    it('Player 1 should become king', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41115/move')
+        .send({ startx: 1, starty: 6, tox: 0, toy: 7 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[0].x).to.equal(0);
+          expect(rsp.body.game.pieces[0].y).to.equal(7);
+          expect(rsp.body.game.pieces[0].king).to.be.true;
+          expect(rsp.body.game.pieces[0].owner).to.equal('p1');
+          done();
+        });
+    });
+    it('Player 1 should NOT become king', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41115/move')
+        .send({ startx: 3, starty: 5, tox: 4, toy: 6 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[1].x).to.equal(4);
+          expect(rsp.body.game.pieces[1].y).to.equal(6);
+          expect(rsp.body.game.pieces[1].king).to.be.false;
+          done();
+        });
+    });
+    it('Player 2 should NOT become king', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41116/move')
+        .send({ startx: 3, starty: 2, tox: 2, toy: 1 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[3].x).to.equal(2);
+          expect(rsp.body.game.pieces[3].y).to.equal(1);
+          expect(rsp.body.game.pieces[3].king).to.be.false;
+          done();
+        });
+    });
+    it('Player 2 should become king', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41116/move')
+        .send({ startx: 1, starty: 1, tox: 0, toy: 0 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[2].x).to.equal(0);
+          expect(rsp.body.game.pieces[2].y).to.equal(0);
+          expect(rsp.body.game.pieces[2].king).to.be.true;
+          expect(rsp.body.game.pieces[2].owner).to.equal('p2');
+          done();
+        });
+    });
   });
 });

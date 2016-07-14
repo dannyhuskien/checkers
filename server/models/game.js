@@ -87,6 +87,14 @@ schema.methods.move = function (moveInfo) {
     return new Error('Invalid move - cannot move more than one space');
   }
 
+  if (this.turn === 'p1' && moveInfo.toy === 7) {
+    this.pieces[pieceIndex].king = true;
+  }
+
+  if (this.turn === 'p2' && moveInfo.toy === 0) {
+    this.pieces[pieceIndex].king = true;
+  }
+
   this.turn = this.turn === 'p1' ? 'p2' : 'p1';
 
   this.pieces[pieceIndex].x = moveInfo.tox;
