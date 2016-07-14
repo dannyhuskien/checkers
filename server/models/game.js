@@ -47,9 +47,30 @@ schema.methods.move = function (moveInfo) {
   if (pieceIndex < 0) {
     return new Error('Piece not found at specified location');
   }
+
+  if (Math.abs(moveInfo.startx - moveInfo.tox) !== Math.abs(moveInfo.starty - moveInfo.toy)) {
+    return new Error('Invalid move - cannot move in any direction other than angels');
+  }
+
+  if (this.pieces[pieceIndex].owner !== this.turn) {
+    return new Error('Invalid move - player can only move own piece');
+  }
+
+  if (this.turn === 'p1' && moveInfo.toy <= moveInfo.starty) {
+    return new Error('Invalid move - cannot move backwards');
+  }
+
+  if (this.turn === 'p2' && moveInfo.toy >= moveInfo.starty) {
+    return new Error('Invalid move - cannot move backwards');
+  }
+
   const destinationIndex = this.pieces.findIndex((val) => val.x === moveInfo.tox && val.y === moveInfo.toy);
   if (destinationIndex > -1) {
     return new Error('Invalid move - some piece already exist');
+  }
+
+  if (Math.abs(moveInfo.startx - moveInfo.tox) > 1) {
+    return new Error('Invalid move - cannot move more than one space');
   }
 
   this.turn = this.turn === 'p1' ? 'p2' : 'p1';
