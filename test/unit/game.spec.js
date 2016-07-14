@@ -33,7 +33,7 @@ describe('Game', () => {
       const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
       testGame.setupBoard();
       const err = testGame.move({ startx: 0, starty: 2, tox: 1, toy: 3 });
-      expect(err).to.be.null;
+      expect(err).to.be.undefined;
       expect(testGame.pieces[8].x).to.equal(1);
       expect(testGame.pieces[8].y).to.equal(3);
       expect(testGame.turn).to.equal('p2');
@@ -92,7 +92,7 @@ describe('Game', () => {
       const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
       testGame.pieces.push({ x: 2, y: 3, king: false, owner: 'p1' });
       const savedArray = testGame.pieces;
-      const err = testGame.move({ startx: 2, starty: 3, tox: 0, toy: 5 });
+      const err = testGame.move({ startx: 2, starty: 3, tox: 5, toy: 6 });
       expect(err).to.be.ok;
       expect(err.message).to.equal('Invalid move - cannot move more than one space');
       expect(testGame.pieces).to.deep.equal(savedArray);
@@ -108,15 +108,67 @@ describe('Game', () => {
       expect(testGame.pieces).to.deep.equal(savedArray);
       expect(testGame.turn).to.equal('p1');
     });
-    it.skip('should jump the piece to the specified coordinate', () => {
+    it('should jump the piece to the specified coordinate - p1 jump upper right', () => {
       const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
       testGame.pieces.push({ x: 3, y: 3, king: false, owner: 'p1' });
       testGame.pieces.push({ x: 4, y: 4, king: false, owner: 'p2' });
       const err = testGame.move({ startx: 3, starty: 3, tox: 5, toy: 5 });
-      expect(err).to.be.null;
+      expect(err).to.be.undefined;
       expect(testGame.pieces).to.have.length(1);
       expect(testGame.pieces[0].x).to.equal(5);
       expect(testGame.pieces[0].y).to.equal(5);
+    });
+    it('should jump the piece to the specified coordinate - p1 jump upper left', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 3, y: 3, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 2, y: 4, king: false, owner: 'p2' });
+      const err = testGame.move({ startx: 3, starty: 3, tox: 1, toy: 5 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces).to.have.length(1);
+      expect(testGame.pieces[0].x).to.equal(1);
+      expect(testGame.pieces[0].y).to.equal(5);
+    });
+    it('should jump the piece to the specified coordinate - p2 jump lower left', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 3, y: 3, king: false, owner: 'p2' });
+      testGame.pieces.push({ x: 2, y: 2, king: false, owner: 'p1' });
+      testGame.turn = 'p2';
+      const err = testGame.move({ startx: 3, starty: 3, tox: 1, toy: 1 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces).to.have.length(1);
+      expect(testGame.pieces[0].x).to.equal(1);
+      expect(testGame.pieces[0].y).to.equal(1);
+    });
+    it('should jump the piece to the specified coordinate - p2 jump lower right', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 3, y: 3, king: false, owner: 'p2' });
+      testGame.pieces.push({ x: 4, y: 2, king: false, owner: 'p1' });
+      testGame.turn = 'p2';
+      const err = testGame.move({ startx: 3, starty: 3, tox: 5, toy: 1 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces).to.have.length(1);
+      expect(testGame.pieces[0].x).to.equal(5);
+      expect(testGame.pieces[0].y).to.equal(1);
+    });
+    it('should NOT jump the piece to the specified coordinate - owned piece', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 0, y: 0, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 1, y: 1, king: false, owner: 'p1' });
+      const err = testGame.move({ startx: 0, starty: 0, tox: 2, toy: 2 });
+      expect(err.message).to.equal('Invalid jump - cannot jump own piece');
+      expect(testGame.pieces).to.have.length(2);
+      expect(testGame.pieces[0].x).to.equal(0);
+      expect(testGame.pieces[0].y).to.equal(0);
+    });
+    it('should NOT jump the piece to the specified coordinate - no target', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 0, y: 0, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 5, y: 5, king: false, owner: 'p1' });
+      const err = testGame.move({ startx: 0, starty: 0, tox: 2, toy: 2 });
+      expect(err.message).to.equal('Invalid jump - no target piece present');
+      expect(testGame.pieces).to.have.length(2);
+      expect(testGame.pieces[0].x).to.equal(0);
+      expect(testGame.pieces[0].y).to.equal(0);
     });
   });
 });

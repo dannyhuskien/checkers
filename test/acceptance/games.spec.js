@@ -119,7 +119,7 @@ describe('games', () => {
     it('should NOT move a piece more than one space (unless jump)', (done) => {
       request(app)
         .put('/games/5786a64b1534ee866ba41111/move')
-        .send({ startx: 2, starty: 3, tox: 0, toy: 5 })
+        .send({ startx: 2, starty: 3, tox: 5, toy: 6 })
         .end((err, rsp) => {
           expect(err).to.be.null;
           expect(rsp.body.messages).to.be.ok;
@@ -140,7 +140,7 @@ describe('games', () => {
           done();
         });
     });
-    it.skip('should jump a piece', (done) => {
+    it('should jump a piece', (done) => {
       request(app)
         .put('/games/5786a64b1534ee866ba41113/move')
         .send({ startx: 3, starty: 3, tox: 5, toy: 5 })
@@ -150,21 +150,30 @@ describe('games', () => {
           expect(rsp.body.game.turn).to.equal('p2');
           expect(rsp.body.game.pieces[0].x).to.equal(5);
           expect(rsp.body.game.pieces[0].y).to.equal(5);
+          expect(rsp.body.game.pieces[0].owner).to.equal('p1');
           expect(rsp.body.game.pieces).to.have.length(1);
           done();
         });
     });
-    it.skip('should NOT jump a piece - attempted to jump own piece', (done) => {
+    it('should NOT jump a piece - attempted to jump own piece', (done) => {
       request(app)
-        .put('/games/5786a64b1534ee866ba41113/move')
+        .put('/games/5786a64b1534ee866ba41114/move')
         .send({ startx: 3, starty: 3, tox: 5, toy: 5 })
         .end((err, rsp) => {
-          expect(rsp.body.game.turn).to.equal('p2');
-          expect(rsp.body.game.pieces[0].x).to.equal(5);
-          expect(rsp.body.game.pieces[0].y).to.equal(5);
-          expect(rsp.body.game.pieces).to.have.length(1);
           expect(err).to.be.null;
-          expect(rsp.status).to.equal(200);
+          expect(rsp.status).to.equal(400);
+          expect(rsp.body.messages[0]).to.contain('Invalid jump - cannot jump own piece');
+          done();
+        });
+    });
+    it('should NOT jump a piece - attempted to jump blank space', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41114/move')
+        .send({ startx: 3, starty: 3, tox: 1, toy: 5 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(400);
+          expect(rsp.body.messages[0]).to.contain('Invalid jump - no target piece present');
           done();
         });
     });

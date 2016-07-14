@@ -1,4 +1,4 @@
-/* eslint-disable max-len, func-names */
+/* eslint-disable max-len, func-names, consistent-return */
 
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
@@ -69,7 +69,21 @@ schema.methods.move = function (moveInfo) {
     return new Error('Invalid move - some piece already exist');
   }
 
-  if (Math.abs(moveInfo.startx - moveInfo.tox) > 1) {
+  if (Math.abs(moveInfo.startx - moveInfo.tox) === 2) {
+    // jump code
+    const targetx = ((moveInfo.tox - moveInfo.startx) / 2) + moveInfo.startx;
+    const targety = ((moveInfo.toy - moveInfo.starty) / 2) + moveInfo.starty;
+    const targetIndex = this.pieces.findIndex((val) => val.x === targetx && val.y === targety);
+    if (targetIndex < 0) {
+      return new Error('Invalid jump - no target piece present');
+    }
+
+    if (this.pieces[targetIndex].owner === this.turn) {
+      return new Error('Invalid jump - cannot jump own piece');
+    }
+
+    this.pieces.splice(targetIndex, 1);
+  } else if (Math.abs(moveInfo.startx - moveInfo.tox) > 1) {
     return new Error('Invalid move - cannot move more than one space');
   }
 
@@ -77,7 +91,7 @@ schema.methods.move = function (moveInfo) {
 
   this.pieces[pieceIndex].x = moveInfo.tox;
   this.pieces[pieceIndex].y = moveInfo.toy;
-  return null;
+  // return null;
 };
 
 module.exports = mongoose.model('Game', schema);

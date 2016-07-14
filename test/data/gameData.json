@@ -213,5 +213,26 @@
         }
     ],
     "__v" : 1
+},
+{
+    "_id" : ObjectId("5786a64b1534ee866ba41114"),
+    "player1" : ObjectId("111111111111111111111111"),
+    "player2" : ObjectId("111111111111111111111112"),
+    "turn" : "p1",
+    "pieces" : [
+        {
+            "x" : 3,
+            "y" : 3,
+            "king" : false,
+            "owner" : "p1"
+        },
+        {
+            "x" : 4,
+            "y" : 4,
+            "king" : false,
+            "owner" : "p1"
+        }
+    ],
+    "__v" : 1
 }
 ]
