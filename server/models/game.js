@@ -2,6 +2,7 @@
 
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+import Player from '../models/player';
 
 const schema = new Schema({
   player1: { type: mongoose.Schema.ObjectId, ref: 'Player' },
@@ -43,7 +44,7 @@ schema.methods.setupBoard = function () {
 };
 
 schema.methods.move = function (moveInfo) {
-  const pieceIndex = this.pieces.findIndex((val) => val.x === moveInfo.startx && val.y === moveInfo.starty);
+  let pieceIndex = this.pieces.findIndex((val) => val.x === moveInfo.startx && val.y === moveInfo.starty);
   if (pieceIndex < 0) {
     return new Error('Piece not found at specified location');
   }
@@ -56,11 +57,11 @@ schema.methods.move = function (moveInfo) {
     return new Error('Invalid move - player can only move own piece');
   }
 
-  if (this.turn === 'p1' && moveInfo.toy <= moveInfo.starty) {
+  if (!this.pieces[pieceIndex].king && this.turn === 'p1' && moveInfo.toy <= moveInfo.starty) {
     return new Error('Invalid move - cannot move backwards');
   }
 
-  if (this.turn === 'p2' && moveInfo.toy >= moveInfo.starty) {
+  if (!this.pieces[pieceIndex].king && this.turn === 'p2' && moveInfo.toy >= moveInfo.starty) {
     return new Error('Invalid move - cannot move backwards');
   }
 
@@ -83,6 +84,7 @@ schema.methods.move = function (moveInfo) {
     }
 
     this.pieces.splice(targetIndex, 1);
+    pieceIndex = this.pieces.findIndex((val) => val.x === moveInfo.startx && val.y === moveInfo.starty);
   } else if (Math.abs(moveInfo.startx - moveInfo.tox) > 1) {
     return new Error('Invalid move - cannot move more than one space');
   }
@@ -99,7 +101,32 @@ schema.methods.move = function (moveInfo) {
 
   this.pieces[pieceIndex].x = moveInfo.tox;
   this.pieces[pieceIndex].y = moveInfo.toy;
-  // return null;
 };
+
+schema.methods.checkWin = function (cb) {
+  let winnerId = null;
+  let loserId = null;
+  const p1piece = this.pieces.find((piece) => piece.owner === 'p1');
+  const p2piece = this.pieces.find((piece) => piece.owner === 'p2');
+
+  if (!p2piece) {
+    winnerId = this.player1;
+    loserId = this.player2;
+  } else if (!p1piece) {
+    winnerId = this.player2;
+    loserId = this.player1;
+  }
+
+  if (!winnerId) {
+    return cb();
+  }
+
+  Player.findByIdAndUpdate(winnerId, { $inc: { wins: 1 } }, { new: true }, (err, winningPlayer) => {
+    Player.findByIdAndUpdate(loserId, { $inc: { losses: 1 } }, () => {
+      cb(winningPlayer);
+    });
+  });
+};
+
 
 module.exports = mongoose.model('Game', schema);

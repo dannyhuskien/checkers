@@ -231,5 +231,57 @@ describe('games', () => {
           done();
         });
     });
+    it('Player 1 king should move backwards', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41117/move')
+        .send({ startx: 1, starty: 6, tox: 0, toy: 5 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[0].x).to.equal(0);
+          expect(rsp.body.game.pieces[0].y).to.equal(5);
+          expect(rsp.body.game.pieces[0].king).to.be.true;
+          expect(rsp.body.game.pieces[0].owner).to.equal('p1');
+          done();
+        });
+    });
+    it('Player 2 king should move backwards', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41118/move')
+        .send({ startx: 1, starty: 1, tox: 0, toy: 2 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.game.pieces[2].x).to.equal(0);
+          expect(rsp.body.game.pieces[2].y).to.equal(2);
+          expect(rsp.body.game.pieces[2].king).to.be.true;
+          expect(rsp.body.game.pieces[2].owner).to.equal('p2');
+          done();
+        });
+    });
+    it('Player 1 should win the game', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41119/move')
+        .send({ startx: 4, starty: 3, tox: 2, toy: 5 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.winner.name).to.equal('tiny');
+          expect(rsp.body.winner.wins).to.equal(1);
+          done();
+        });
+    });
+    it('Player 2 should win the game', (done) => {
+      request(app)
+        .put('/games/5786a64b1534ee866ba41120/move')
+        .send({ startx: 3, starty: 4, tox: 5, toy: 2 })
+        .end((err, rsp) => {
+          expect(err).to.be.null;
+          expect(rsp.status).to.equal(200);
+          expect(rsp.body.winner.name).to.equal('biggy');
+          expect(rsp.body.winner.wins).to.equal(1);
+          done();
+        });
+    });
   });
 });

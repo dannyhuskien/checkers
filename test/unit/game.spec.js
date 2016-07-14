@@ -2,8 +2,20 @@
 
 const expect = require('chai').expect;
 const Game = require('../../dst/models/game');
+const Player = require('../../dst/models/player');
+const sinon = require('sinon');
+
 
 describe('Game', () => {
+  beforeEach(() => {
+    sinon.stub(Player, 'findByIdAndUpdate').yields(null, [{ name: 'someJerk', wins: 0, losses: 0 }]);
+  });
+
+  afterEach(() => {
+    Player.findByIdAndUpdate.restore();
+  });
+
+
   describe('constructor', () => {
     it('should create a new game object', (done) => {
       const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
@@ -211,6 +223,55 @@ describe('Game', () => {
       expect(testGame.pieces[1].x).to.equal(6);
       expect(testGame.pieces[1].y).to.equal(4);
       expect(testGame.pieces[1].king).to.be.false;
+    });
+    it('Player 1 king should move backwards', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: true, owner: 'p1' });
+      testGame.pieces.push({ x: 5, y: 5, king: false, owner: 'p2' });
+      const err = testGame.move({ startx: 1, starty: 6, tox: 0, toy: 5 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[0].x).to.equal(0);
+      expect(testGame.pieces[0].y).to.equal(5);
+      expect(testGame.pieces[0].king).to.be.true;
+    });
+    it('Player 2 king should move backwards', () => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 1, y: 1, king: true, owner: 'p2' });
+      testGame.turn = 'p2';
+      const err = testGame.move({ startx: 1, starty: 1, tox: 0, toy: 2 });
+      expect(err).to.be.undefined;
+      expect(testGame.pieces[1].x).to.equal(0);
+      expect(testGame.pieces[1].y).to.equal(2);
+      expect(testGame.pieces[1].king).to.be.true;
+    });
+  });
+  describe('#checkWin', () => {
+    it('player 1 should be in win state', (done) => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p1' });
+      testGame.checkWin((winningPlayer) => {
+        expect(winningPlayer).to.be.ok;
+        done();
+      });
+    });
+    it('player 2 should be in win state', (done) => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p2' });
+      testGame.checkWin((winningPlayer) => {
+        expect(winningPlayer).to.be.ok;
+        expect(true).to.be.true;
+        done();
+      });
+    });
+    it('nobody should have won game', (done) => {
+      const testGame = new Game({ player1: '111111111111111111111111', player2: '111111111111111111111112' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p1' });
+      testGame.pieces.push({ x: 1, y: 6, king: false, owner: 'p2' });
+      testGame.checkWin((winningPlayer) => {
+        expect(winningPlayer).to.be.undefined;
+        done();
+      });
     });
   });
 });

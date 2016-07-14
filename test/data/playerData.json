@@ -1,0 +1,16 @@
+[
+  {
+    "_id" : ObjectId("578801eab8a5b65db94da4ee"),
+    "name" : "tiny",
+    "losses" : 0,
+    "wins" : 0,
+    "__v" : 0
+  },
+  {
+    "_id" : ObjectId("578801eab8a5b65db94da432"),
+    "name" : "biggy",
+    "losses" : 0,
+    "wins" : 0,
+    "__v" : 0
+  }
+]

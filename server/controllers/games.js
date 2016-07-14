@@ -2,6 +2,7 @@
 
 import express from 'express';
 import Game from '../models/game';
+
 import moveBody from '../validators/moveBody';
 const router = module.exports = express.Router();
 
@@ -23,9 +24,16 @@ router.put('/:id/move', moveBody, (req, res) => {
       res.status(400).send({ messages: [moveErr.message] });
       return;
     }
-    game.markModified('pieces');
-    game.save((saveGameError, modifiedGame) => {
-      res.send({ game: modifiedGame });
+
+    game.checkWin((winner) => {
+      if (winner) {
+        res.send({ winner });
+        return;
+      }
+      game.markModified('pieces');
+      game.save((saveGameError, modifiedGame) => {
+        res.send({ game: modifiedGame });
+      });
     });
   });
 });
