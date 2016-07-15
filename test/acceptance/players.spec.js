@@ -26,4 +26,19 @@ describe('players', () => {
       });
     });
   });
+  describe('get /players', () => {
+    it('should get a list of all players', (done) => {
+      request(app)
+      .get('/players')
+      .send()
+      .end((err, rsp) => {
+        expect(rsp.body.players).to.have.length(2);
+        expect(rsp.body.players[0].name).to.not.be.null;
+        expect(rsp.body.players[1].name).to.not.be.null;
+        expect(err).to.be.null;
+        expect(rsp.status).to.equal(200);
+        done();
+      });
+    });
+  });
 });

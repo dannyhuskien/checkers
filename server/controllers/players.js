@@ -10,3 +10,7 @@ router.post('/', (req, res) => {
     res.send({ player });
   });
 });
+
+router.get('/', (req, res) => {
+  Player.find((err, players) => res.send({ players }));
+});
